@@ -9,11 +9,12 @@ import SwiftUI
 
 @main
 struct LoginAppSwiftUIApp: App {
-    @StateObject private var login = LoginManager()
+    @StateObject private var storage = StorageManager()
+    
     var body: some Scene {
         WindowGroup {
             StarterView()
-                .environmentObject(login)
+                .environmentObject(storage)
         }
     }
 }

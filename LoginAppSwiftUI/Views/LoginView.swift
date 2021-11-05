@@ -9,26 +9,32 @@ import SwiftUI
 
 struct LoginView: View {
     @State private var userName = ""
-    @EnvironmentObject private var login: LoginManager
+    @EnvironmentObject private var storage: StorageManager
     
     var body: some View {
         VStack {
-            TextField("Enter login", text: $userName)
-                .multilineTextAlignment(.center)
+            HStack {
+                TextField("Enter your login", text: $userName)
+                    .multilineTextAlignment(.center)
+                Spacer()
+                Text("\(userName.count)")
+                    .foregroundColor(userName.count < 3 ? .red : .green)
+            }
+            .padding()
             Button(action: registerUser) {
                 HStack {
                     Image(systemName: "checkmark.circle")
                     Text("Ok")
                 }
             }
+            .disabled(userName.count < 3)
         }
+        .padding()
     }
     
     private func registerUser() {
-        if !userName.isEmpty {
-            login.name = userName
-            login.isRegister.toggle()
-        }
+        storage.userDefaults.set(userName, forKey: "userName")
+        storage.stringForKey = userName
     }
 }
 

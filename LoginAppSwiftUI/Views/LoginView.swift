@@ -8,35 +8,55 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var userName = ""
-    @EnvironmentObject private var storage: StorageManager
+    
+    @EnvironmentObject private var userManager: UserManager
     
     var body: some View {
         VStack {
-            HStack {
-                TextField("Enter your login", text: $userName)
-                    .multilineTextAlignment(.center)
-                Spacer()
-                Text("\(userName.count)")
-                    .foregroundColor(userName.count < 3 ? .red : .green)
-            }
-            .padding()
+            UserNameTF(
+                name: $userManager.user.name,
+                nameIsValid: userManager.nameIsValid
+            )
             Button(action: registerUser) {
                 HStack {
                     Image(systemName: "checkmark.circle")
                     Text("Ok")
                 }
             }
-            .disabled(userName.count < 3)
+            .disabled(!userManager.nameIsValid)
         }
         .padding()
     }
     
     private func registerUser() {
-        storage.userDefaults.set(userName, forKey: "userName")
-        storage.stringForKey = userName
+        if !userManager.user.name.isEmpty {
+            userManager.user.isRegistered.toggle()
+            StorageManager.shared.save(user: userManager.user)
+        }
     }
 }
+
+struct UserNameTF: View {
+    
+    @Binding var name: String
+    var nameIsValid = false
+    
+    var body: some View {
+        ZStack {
+            TextField("Type your name...", text: $name)
+                .multilineTextAlignment(.center)
+            HStack {
+                Spacer()
+                Text("\(name.count)")
+                    .font(.callout)
+                    .foregroundColor(nameIsValid ? .green : .red)
+                    .padding([.top, .trailing])
+            }
+            .padding(.bottom)
+        }
+    }
+}
+
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
